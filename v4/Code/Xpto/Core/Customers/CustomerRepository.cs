@@ -129,24 +129,24 @@ namespace Xpto.Core.Customers
             var commandText = this.GetSelectQuery()
                     .AppendLine(" WHERE [id] = @id");
 
-            var connection = new SqlConnection(this.connectionString);
-            connection.Open();
-            var cm = connection.CreateCommand();
-
-            cm.CommandText = commandText.ToString();
-
-            cm.Parameters.Add(new SqlParameter("@id", id));
-
-            var dataReader = cm.ExecuteReader();
-
             Customer customer = null;
 
-            while (dataReader.Read())
+            using (var connection = new SqlConnection(this.connectionString))
             {
-                customer = LoadDataReader(dataReader);
-            }
+                connection.Open();
+                var cm = connection.CreateCommand();
 
-            connection.Close();
+                cm.CommandText = commandText.ToString();
+
+                cm.Parameters.Add(new SqlParameter("@id", id));
+
+                var dataReader = cm.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    customer = LoadDataReader(dataReader);
+                }
+            }
 
             return customer;
 
@@ -182,7 +182,7 @@ namespace Xpto.Core.Customers
 
         public IList<Customer> Find()
         {
-            var l = new List<Customer>();
+            var listCustomers = new List<Customer>();
 
             var commandText = this.GetSelectQuery();
 
@@ -199,64 +199,57 @@ namespace Xpto.Core.Customers
             {
                 var customer = LoadDataReader(dataReader);
 
-                l.Add(customer);
+                listCustomers.Add(customer);
             }
 
-            return l;
+            return listCustomers;
         }
 
         private static Customer LoadDataReader(SqlDataReader dataReader)
         {
-            var customer = new Customer();
+            var customer = new Customer
+            {
+                Id = DataReaderExtensions.GetGuid(dataReader, "id"),
+                Code = DataReaderExtensions.GetInt32(dataReader, "code"),
+                Name = DataReaderExtensions.GetString(dataReader, "name"),
+                Nickname = DataReaderExtensions.GetString(dataReader, "nickname"),
+                BirthDate = DataReaderExtensions.GetDateTime(dataReader, "birth_date"),
+                PersonType = DataReaderExtensions.GetString(dataReader, "person_type"),
+                Note = DataReaderExtensions.GetString(dataReader, "note"),
+                CreationDate = DataReaderExtensions.GetDateTime(dataReader, "creation_date"),
+                CreationUserId = DataReaderExtensions.GetGuid(dataReader, "creation_user_id"),
+                CreationUserName = DataReaderExtensions.GetString(dataReader, "creation_user_name"),
+                ChangeDate = DataReaderExtensions.GetDateTime(dataReader, "change_date"),
+                ChangeUserId = DataReaderExtensions.GetGuid(dataReader, "change_user_id"),
+                ChangeUserName = DataReaderExtensions.GetString(dataReader, "change_user_name")
+            };
 
+            //customer.PersonType = dataReader["person_type"].ToString();
 
-            customer.Id = DataReaderExtensions.GetGuid(dataReader, "id");
-            customer.Code = DataReaderExtensions.GetInt32(dataReader, "code");
-            customer.Name = DataReaderExtensions.GetString(dataReader, "name");
-            customer.Nickname = DataReaderExtensions.GetString(dataReader, "nickname");
-            customer.BirthDate = DataReaderExtensions.GetDateTime(dataReader, "birth_date");
+            //customer.Note = dataReader["note"].ToString();
 
+            //DateTime.TryParse(dataReader["creation_date"].ToString(), out var creationDate);
+            //customer.CreationDate = creationDate;
 
-            customer.PersonType = dataReader["person_type"].ToString();
+            //Guid.TryParse(dataReader["creation_user_id"]?.ToString(), out var creationUserId);
+            //customer.CreationUserId = creationUserId;
 
-            customer.Note = dataReader["note"].ToString();
+            //customer.CreationUserName = dataReader["creation_user_name"].ToString();
 
-            DateTime.TryParse(dataReader["creation_date"].ToString(), out var creationDate);
-            customer.CreationDate = creationDate;
+            //DateTime.TryParse(dataReader["change_date"].ToString(), out var changeDate);
+            //customer.ChangeDate = changeDate;
 
-            Guid.TryParse(dataReader["creation_user_id"]?.ToString(), out var creationUserId);
-            customer.CreationUserId = creationUserId;
+            //Guid.TryParse(dataReader["change_user_id"]?.ToString(), out var changeUserId);
+            //customer.ChangeUserId = changeUserId;
 
-            customer.CreationUserName = dataReader["creation_user_name"].ToString();
+            //customer.ChangeUserName = dataReader["change_user_name"].ToString();
 
-            DateTime.TryParse(dataReader["change_date"].ToString(), out var changeDate);
-            customer.ChangeDate = changeDate;
-
-            Guid.TryParse(dataReader["change_user_id"]?.ToString(), out var changeUserId);
-            customer.ChangeUserId = changeUserId;
-
-            customer.ChangeUserName = dataReader["change_user_name"].ToString();
             return customer;
         }
 
         public DataTable LoadDataTable()
         {
-            var commandText = new StringBuilder()
-                .AppendLine(" SELECT")
-                .AppendLine(" A.[id],")
-                .AppendLine(" A.[code],")
-                .AppendLine(" A.[name],")
-                .AppendLine(" A.[nickname],")
-                .AppendLine(" A.[birth_date],")
-                .AppendLine(" A.[person_type],")
-                .AppendLine(" A.[note],")
-                .AppendLine(" A.[creation_date],")
-                .AppendLine(" A.[creation_user_id],")
-                .AppendLine(" A.[creation_user_name],")
-                .AppendLine(" A.[change_date],")
-                .AppendLine(" A.[change_user_id],")
-                .AppendLine(" A.[change_user_name]")
-                .AppendLine(" FROM [tb_customer] AS A");
+            var commandText = GetSelectQuery();
 
             var connection = new SqlConnection(this.connectionString);
             connection.Open();
@@ -287,14 +280,14 @@ namespace Xpto.Core.Customers
 
             cm.CommandText = commandText.ToString();
 
-            var count = cm.ExecuteScalar();
+            var count = cm.ExecuteScalar(); //Executar uma linha
 
             var result = count == null ? 0 : Convert.ToInt64(count);
 
             return result;
         }
 
-        public StringBuilder GetSelectQuery()
+        private StringBuilder GetSelectQuery()
         {
             var sb = new StringBuilder()
                 .AppendLine(" SELECT")
