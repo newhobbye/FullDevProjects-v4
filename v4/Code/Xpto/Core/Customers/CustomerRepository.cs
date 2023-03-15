@@ -209,19 +209,19 @@ namespace Xpto.Core.Customers
         {
             var customer = new Customer
             {
-                Id = DataReaderExtensions.GetGuid(dataReader, "id"),
-                Code = DataReaderExtensions.GetInt32(dataReader, "code"),
-                Name = DataReaderExtensions.GetString(dataReader, "name"),
-                Nickname = DataReaderExtensions.GetString(dataReader, "nickname"),
-                BirthDate = DataReaderExtensions.GetDateTime(dataReader, "birth_date"),
-                PersonType = DataReaderExtensions.GetString(dataReader, "person_type"),
-                Note = DataReaderExtensions.GetString(dataReader, "note"),
-                CreationDate = DataReaderExtensions.GetDateTime(dataReader, "creation_date"),
-                CreationUserId = DataReaderExtensions.GetGuid(dataReader, "creation_user_id"),
-                CreationUserName = DataReaderExtensions.GetString(dataReader, "creation_user_name"),
-                ChangeDate = DataReaderExtensions.GetDateTime(dataReader, "change_date"),
-                ChangeUserId = DataReaderExtensions.GetGuid(dataReader, "change_user_id"),
-                ChangeUserName = DataReaderExtensions.GetString(dataReader, "change_user_name")
+                Id = dataReader.GetGuid("id"),
+                Code = dataReader.GetInt32("code"),
+                Name = dataReader.GetString("name"),
+                Nickname = dataReader.GetString("nickname"),
+                BirthDate = dataReader.GetDateTime("birth_date"),
+                PersonType = dataReader.GetString("person_type"),
+                Note = dataReader.GetString("note"),
+                CreationDate = dataReader.GetDateTime("creation_date"),
+                CreationUserId = dataReader.GetGuid("creation_user_id"),
+                CreationUserName = dataReader.GetString("creation_user_name"),
+                ChangeDate = dataReader.GetDateTime("change_date"),
+                ChangeUserId = dataReader.GetGuid("change_user_id"),
+                ChangeUserName = dataReader.GetString("change_user_name")
             };
 
             //customer.PersonType = dataReader["person_type"].ToString();
