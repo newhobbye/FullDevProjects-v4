@@ -11,7 +11,7 @@ namespace Xpto.Core.Customers
 {
     public class CustomerRepository
     {
-        private readonly string connectionString = "server=.;database=db_xpto;user=xpto;password=123456";
+        private readonly string connectionString = "Data Source=NT20\\ROBSONDB;Initial Catalog=DB_XPTO;Persist Security Info=True;User ID=sa;Password=R55108105";
 
         public Customer Insert(Customer customer)
         {
@@ -315,54 +315,15 @@ namespace Xpto.Core.Customers
             cm.Parameters.Add(new SqlParameter("@name", customer.Name.GetDbValue()));
             cm.Parameters.Add(new SqlParameter("@nickname", customer.Nickname.GetDbValue()));
             cm.Parameters.Add(new SqlParameter("@birth_date", customer.BirthDate.GetDbValue()));
-
-
-            if (string.IsNullOrWhiteSpace(customer.PersonType))
-                cm.Parameters.Add(new SqlParameter("@person_type", DBNull.Value));
-
-            else
-                cm.Parameters.Add(new SqlParameter("@person_type", customer.PersonType));
-
-            if (string.IsNullOrWhiteSpace(customer.Identity))
-                cm.Parameters.Add(new SqlParameter("@identity", DBNull.Value));
-
-            else
-                cm.Parameters.Add(new SqlParameter("@identity", customer.Identity));
-
-            if (string.IsNullOrWhiteSpace(customer.Note))
-                cm.Parameters.Add(new SqlParameter("@note", DBNull.Value));
-
-            else
-                cm.Parameters.Add(new SqlParameter("@note", customer.Note));
-
-
-            if (customer.CreationDate == null || customer.CreationDate <= new DateTime(1900, 01, 01))
-                cm.Parameters.Add(new SqlParameter("@creation_date", DBNull.Value));
-            else
-                cm.Parameters.Add(new SqlParameter("@creation_date", customer.CreationDate));
-
-
-            cm.Parameters.Add(new SqlParameter("@creation_user_id", customer.CreationUserId));
-
-            if (string.IsNullOrWhiteSpace(customer.CreationUserName))
-                cm.Parameters.Add(new SqlParameter("@creation_user_name", DBNull.Value));
-
-            else
-                cm.Parameters.Add(new SqlParameter("@creation_user_name", customer.CreationUserName));
-
-
-            if (customer.ChangeDate == null)
-                cm.Parameters.Add(new SqlParameter("@change_date", DBNull.Value));
-            else
-                cm.Parameters.Add(new SqlParameter("@change_date", customer.ChangeDate));
-
-            cm.Parameters.Add(new SqlParameter("@change_user_id", customer.ChangeUserId));
-
-
-            if (string.IsNullOrWhiteSpace(customer.ChangeUserName))
-                cm.Parameters.Add(new SqlParameter("@change_user_name", DBNull.Value));
-            else
-                cm.Parameters.Add(new SqlParameter("@change_user_name", customer.ChangeUserName));
+            cm.Parameters.Add(new SqlParameter("@person_type", customer.PersonType.GetDbValue()));
+            cm.Parameters.Add(new SqlParameter("@identity", customer.Identity.GetDbValue()));
+            cm.Parameters.Add(new SqlParameter("@note", customer.Note.GetDbValue()));
+            cm.Parameters.Add(new SqlParameter("@creation_date", customer.CreationDate.GetDbValue()));
+            cm.Parameters.Add(new SqlParameter("@creation_user_id", customer.CreationUserId.GetDbValue()));
+            cm.Parameters.Add(new SqlParameter("@creation_user_name", customer.CreationUserName.GetDbValue()));
+            cm.Parameters.Add(new SqlParameter("@change_date", customer.ChangeDate.GetDbValue()));
+            cm.Parameters.Add(new SqlParameter("@change_user_id", customer.ChangeUserId.GetDbValue()));
+            cm.Parameters.Add(new SqlParameter("@change_user_name", customer.ChangeUserName.GetDbValue()));
         }
 
     }
