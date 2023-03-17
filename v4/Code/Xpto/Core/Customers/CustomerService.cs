@@ -1,5 +1,8 @@
 ﻿using System.Data;
 using System.Globalization;
+using Xpto.Core.Adresses;
+using Xpto.Core.Emails;
+using Xpto.Core.Shared.ApiFunctions;
 
 namespace Xpto.Core.Customers
 {
@@ -75,8 +78,8 @@ namespace Xpto.Core.Customers
                 if (code == 0)
                     return;
 
-                var repository = new CustomerRepository();
-                var customer = repository.Get(code);
+                var customerRepository = new CustomerRepository();
+                var customer = customerRepository.Get(code);
 
                 if (customer == null)
                 {
@@ -191,13 +194,65 @@ namespace Xpto.Core.Customers
             }
 
 
-
-
             Console.Write("Observação:");
             customer.Note = Console.ReadLine();
 
-            var repository = new CustomerRepository();
-            repository.Insert(customer);
+            var customerRepository = new CustomerRepository();
+            customerRepository.Insert(customer);
+
+            var address = new Address();
+            address.CustomerCode = customer.Code;
+
+            Console.WriteLine("Endereço");
+            Console.WriteLine();
+            Console.WriteLine("Digite o CEP do cliente:");
+            string cep = "";
+            cep = Console.ReadLine();
+
+            var zipCodeFunction = new ZipCodeFunction();
+            var addressParams = zipCodeFunction.GetAddressByZipCode(cep);
+
+            if(addressParams.Street == null)
+            {
+                Console.WriteLine("Digite o nome da rua: ");
+                address.Street = Console.ReadLine();
+                Console.WriteLine("Digite o numero: ");
+                address.Number = Console.ReadLine();
+                Console.WriteLine("Digite o bairro: ");
+                address.District = Console.ReadLine();
+                Console.WriteLine("Digite a cidade:");
+                address.City = Console.ReadLine();
+                Console.WriteLine("Digite o estado:");
+                address.State = Console.ReadLine();
+                address.Note = "Não encontrado pelo viaCep. Digitado Manualmente!";
+            }
+            else
+            {
+                Console.WriteLine("Digite o numero: ");
+                address.Number = Console.ReadLine();
+                address.Street = addressParams.Street;
+                address.District = addressParams.District;
+                address.City = addressParams.City;
+                address.State = addressParams.State;
+                address.Note = "Recebido viaCep API";
+            }
+
+            var addressRepository = new AddressRepository();
+            
+            addressRepository.Insert(address);
+
+            Console.WriteLine();
+
+            Console.WriteLine("Digite o email do cliente:");
+            string email = Console.ReadLine();
+
+            var emailRepository = new EmailRepository();
+            emailRepository.Insert(new Email
+            {
+                CustomerCode = customer.Code,
+                Address = email!,
+                Note = "incluso ao criar o cadastro."
+            });
 
             Console.WriteLine();
             Console.WriteLine("Cliente cadastrado com sucesso");

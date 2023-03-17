@@ -1,3 +1,5 @@
+using Xpto.Core.Adresses;
+using Xpto.Core.Emails;
 using Xpto.Core.Shared.Entities;
 
 namespace Xpto.Core.Customers

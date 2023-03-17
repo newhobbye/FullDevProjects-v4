@@ -5,6 +5,8 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using Xpto.Core.Adresses;
+using Xpto.Core.Emails;
 using Xpto.Core.Shared.Sql;
 
 namespace Xpto.Core.Customers
@@ -12,6 +14,14 @@ namespace Xpto.Core.Customers
     public class CustomerRepository
     {
         private readonly string connectionString = "Data Source=NT20\\ROBSONDB;Initial Catalog=DB_XPTO;Persist Security Info=True;User ID=sa;Password=R55108105";
+        private AddressRepository addressRepository;
+        private EmailRepository emailRepository;
+
+        public CustomerRepository()
+        {
+            this.addressRepository = new AddressRepository();
+            this.emailRepository = new EmailRepository();
+        }
 
         public Customer Insert(Customer customer)
         {
@@ -173,6 +183,9 @@ namespace Xpto.Core.Customers
             {
                 customer = LoadDataReader(dataReader);
             }
+
+            customer.Addresses = addressRepository.Get(code);
+            customer.Emails = emailRepository.Get(code);
 
             connection.Close();
 
